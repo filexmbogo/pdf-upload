@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build: .  # Build the Node.js application using the Dockerfile in the current directory
+    ports:
+      - "3000:3000"  # Map port 10000 on the host to port 10000 in the container
+   # Ensure mongo starts before your app
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/docs # Connection string for your app
+
+  
+  
