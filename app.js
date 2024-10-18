@@ -2,47 +2,18 @@ const express= require ('express')
 const app=express()
 const port =process.env.port||5000
 
-
+//database
+const mongoose=require("mongoose")
+//const mongoURI = 'mongodb://mongodb:27017/docs';
+const uri = "mongodb+srv://filexmbogo:filexmbogo.691@cluster0.rff4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create Mongoose connection
 
-
+const conn=mongoose.createConnection(uri)
 
 //gridfs to upload and serve files in chunks
 const grid= require('gridfs-stream')
 const {GridFSBucket}= require('mongodb')
-
-
-const mongoose = require('mongoose');
-const uri = "mongodb+srv://filexmbogo:filexmbogo.691@cluster0.rff4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-let gfs, gridfsbuccket;
-let isConnected = false; // Track connection state
-
-const connectDB = async () => {
-    if (!isConnected) {
-        try {
-            const conn = await mongoose.createConnection(uri, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });
-
-            conn.once('open', () => {
-                gridfsbucket = new GridFSBucket(conn.db, { bucketName: 'pdfs' });
-                gfs = grid(conn.db, mongoose.mongo);
-                isConnected = true; // Set connection state to true
-                console.log("MongoDB connection established!");
-            });
-            return conn;
-        } catch (error) {
-            console.error("Error connecting to MongoDB:", error);
-            throw error; // Re-throw to handle it in the main route
-        }
-    }
-};
-
-// Initialize connection
-connectDB();
 
 //multer for file upload
 const multer=require('multer')
@@ -68,7 +39,13 @@ app.set('view engine','ejs')
 app.set('views','src/views')
 
 
+//initialize gridfs
+let gfs,gridfsbuccket;
+conn.once('open',()=>{
+    gridfsbuccket=new GridFSBucket(conn.db,{bucketName:'pdfs'})
 
+gfs=grid(conn.db,mongoose.mongo)
+gfs.collection('pdfs')})
 
 
 //homepage
